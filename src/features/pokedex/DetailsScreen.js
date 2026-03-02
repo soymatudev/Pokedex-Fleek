@@ -7,7 +7,7 @@ import { useDexterVoice } from '../../hooks/useDexterVoice';
 import { useSound } from '../../hooks/useSound';
 
 export const DetailsScreen = ({ route }) => {
-    const { pokemonId } = route.params;
+    let { pokemonId } = route.params;
     const [pokemon, setPokemon] = useState(null);
     const [loading, setLoading] = useState(true);
     const { hablarEntrada } = useDexterVoice();
@@ -16,6 +16,7 @@ export const DetailsScreen = ({ route }) => {
     useEffect(() => {
         const fetchFullData = async () => {
             try {
+                pokemonId = parseInt(pokemonId);
                 const [resData, resSpecies] = await Promise.all([
                     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`),
                     fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`)

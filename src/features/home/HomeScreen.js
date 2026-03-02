@@ -1,150 +1,122 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { use, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Image, ImageBackground, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme/theme';
+import { useSound } from '../../hooks/useSound';
 
 export const HomeScreen = ({ navigation }) => {
+    const { setupRouteOne } = useSound();
+    const [backgroundMusic, setBackgroundMusic] = useState(null);
+
+    useEffect(() => {
+        setupRouteOne(setBackgroundMusic);
+        return () => {
+            if (backgroundMusic) {
+                backgroundMusic.unloadAsync();
+            }
+        };
+    }, []);
+
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
+        <ImageBackground
+            source={require('../../../assets/img/home_background.png')}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
+            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-                {/* Logo / Header */}
+            <View style={styles.contentOverlay}>
                 <View style={styles.header}>
-                    <View style={styles.logoContainer}>
-                        <Text style={styles.logoEmoji}>🔴</Text>
-                    </View>
-                    <Text style={styles.title}>
-                        POKÉDEX <Text style={{ color: theme.colors.primary }}>Fleek</Text>
-                    </Text>
-                    <Text style={styles.subtitle}>
-                        Sistema de reconocimiento de especies v1.0.2
-                    </Text>
+                    <Text style={styles.title}>DEXTER v1.0</Text>
+                    <Text style={styles.subtitle}>SISTEMA DE IDENTIFICACIÓN POKÉMON</Text>
                 </View>
 
-                {/* Botones de Acción */}
-                <View style={styles.buttonContainer}>
+                <View style={styles.menuContainer}>
                     <TouchableOpacity
-                        activeOpacity={0.8}
+                        style={styles.menuButton}
                         onPress={() => navigation.navigate('Scanner')}
-                        style={styles.primaryButton}
                     >
-                        <Text style={styles.primaryButtonText}>📷 ESCANEAR CAMPO</Text>
+                        <Text style={styles.buttonIcon}></Text>
+                        <Text style={styles.buttonText}>📷 ESCANEAR OBJETIVO</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        activeOpacity={0.8}
+                        style={[styles.menuButton, styles.buttonSecondary]}
                         onPress={() => navigation.navigate('PokedexList')}
-                        style={styles.secondaryButton}
                     >
-                        <Text style={styles.secondaryButtonText}>📑 VER REGISTROS</Text>
+                        <Text style={styles.buttonIcon}>📕</Text>
+                        <Text style={styles.buttonText}>VER REGISTROS</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Status Bar Inferior */}
                 <View style={styles.statusBadge}>
                     <View style={styles.statusDot} />
                     <Text style={styles.statusText}>SISTEMA ONLINE</Text>
                 </View>
 
             </View>
-        </SafeAreaView>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
+    backgroundImage: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        width: '100%',
+        height: '100%',
     },
-    container: {
+    // Contenedor sobre la imagen (Oscurece un poco el fondo)
+    contentOverlay: {
         flex: 1,
-        paddingHorizontal: theme.spacing.lg,
+        backgroundColor: 'rgba(0,0,0,0.5)', // Negro al 50% de opacidad
         justifyContent: 'space-around',
         alignItems: 'center',
+        paddingTop: StatusBar.currentHeight + 20, // Espacio para la barra de estado
+        paddingBottom: 40,
     },
+    // ... Tus estilos actuales para header, title, menuButton, etc ...
     header: {
         alignItems: 'center',
     },
-    logoContainer: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        backgroundColor: theme.colors.surface,
-        borderWidth: 4,
-        borderColor: theme.colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-    },
-    logoEmoji: {
-        fontSize: 50,
-    },
     title: {
+        color: '#fff',
         fontSize: 28,
-        fontWeight: '900',
-        marginTop: theme.spacing.md,
-        color: theme.colors.text,
+        fontWeight: 'bold',
+        letterSpacing: 2,
+        textShadowColor: 'black', // Sombra de texto para legibilidad extra
+        textShadowRadius: 10,
     },
     subtitle: {
-        textAlign: 'center',
-        color: theme.colors.textSecondary,
-        marginTop: theme.spacing.sm,
-        paddingHorizontal: 20,
-    },
-    buttonContainer: {
-        width: '100%',
-        gap: theme.spacing.md,
-    },
-    primaryButton: {
-        backgroundColor: theme.colors.primary,
-        paddingVertical: theme.spacing.lg,
-        borderRadius: theme.borderRadius.lg,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 3,
-    },
-    primaryButtonText: {
-        color: '#fff',
-        fontSize: 18,
+        color: theme.colors.border, // Usamos el rojo de tu tema
+        fontSize: 12,
+        marginTop: 5,
         fontWeight: 'bold',
     },
-    secondaryButton: {
-        backgroundColor: theme.colors.surface,
-        paddingVertical: theme.spacing.lg,
-        borderRadius: theme.borderRadius.lg,
-        borderWidth: 2,
-        borderColor: theme.colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
+    menuContainer: {
+        width: '80%',
+        gap: 20,
     },
-    secondaryButtonText: {
-        color: theme.colors.primary,
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    statusBadge: {
+    menuButton: {
+        backgroundColor: '#fff',
         flexDirection: 'row',
+        padding: 20,
+        borderRadius: 15,
         alignItems: 'center',
-        backgroundColor: theme.colors.border,
-        paddingHorizontal: theme.spacing.md,
-        paddingVertical: 6,
-        borderRadius: theme.borderRadius.full,
+        elevation: 10,
     },
-    statusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#4caf50',
-        marginRight: 8,
+    buttonSecondary: {
+        backgroundColor: 'rgba(255,255,255,0.2)', // Botón más sutil
+        borderWidth: 1,
+        borderColor: '#fff',
     },
-    statusText: {
-        fontSize: 10,
-        fontWeight: '600',
-        color: theme.colors.textSecondary,
+    buttonText: {
+        color: '#333',
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginLeft: 15,
+    },
+    buttonIcon: {
+        fontSize: 24,
     }
 });
 
